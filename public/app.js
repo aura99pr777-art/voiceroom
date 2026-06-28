@@ -114,37 +114,50 @@ function addLocalTile () {
   const tile = buildTile('tile-local', myName, /*isLocal=*/true);
   videoGrid.appendChild(tile);
   tile.querySelector('video').srcObject = localStream;
-  if (isCameraOff) tile.classList.add('cam-off');
+  // cam-off is added by default in buildTile; remove if camera is available
+  if (!isCameraOff) tile.classList.remove('cam-off');
   refreshGrid();
 }
 
 function buildTile (id, name, isLocal = false) {
   const tile = document.createElement('div');
-  tile.className = 'video-tile';
+  tile.className = 'video-tile cam-off' + (isLocal ? ' is-local' : '');
   tile.id = id;
 
-  // <video>
+  // Video (shown when cam is on)
   const video = document.createElement('video');
-  video.autoplay   = true;
+  video.autoplay    = true;
   video.playsInline = true;
   if (isLocal) video.muted = true;
 
-  // Avatar overlay
-  const avatar = document.createElement('div');
-  avatar.className = 'tile-avatar';
-  avatar.style.background = avatarColor(name);
-  avatar.textContent = name[0].toUpperCase();
+  // ── Inner (avatar + name — shown when cam is off) ──
+  const inner = document.createElement('div');
+  inner.className = 'tile-inner';
 
-  // Name tag row
-  const nameTag  = document.createElement('div');
+  const circle = document.createElement('div');
+  circle.className = 'tile-avatar-circle';
+  circle.style.background = avatarColor(name);
+  circle.textContent = name[0].toUpperCase();
+
+  const dispName = document.createElement('div');
+  dispName.className = 'tile-display-name';
+  dispName.textContent = name;
+
+  const volume = document.createElement('div');
+  volume.className = 'tile-volume' + (isLocal ? ' hidden' : '');
+  volume.innerHTML = '<i class="fas fa-volume-low"></i><span>—</span>';
+
+  inner.appendChild(circle);
+  inner.appendChild(dispName);
+  inner.appendChild(volume);
+
+  // ── Overlay name tag (shown above video when cam is on) ──
+  const nameTag = document.createElement('div');
   nameTag.className = 'tile-name-tag';
-
   const micIcon = document.createElement('i');
   micIcon.className = 'fas fa-microphone-slash tile-mic-icon hidden';
-
   const nameSpan = document.createElement('span');
   nameSpan.textContent = name;
-
   nameTag.appendChild(micIcon);
   nameTag.appendChild(nameSpan);
 
@@ -154,7 +167,7 @@ function buildTile (id, name, isLocal = false) {
   badge.innerHTML = '<i class="fas fa-desktop"></i> Sharing';
 
   tile.appendChild(video);
-  tile.appendChild(avatar);
+  tile.appendChild(inner);
   tile.appendChild(nameTag);
   tile.appendChild(badge);
   return tile;
@@ -468,28 +481,39 @@ function updateControls () {
 
   if ($mute) {
     $mute.classList.toggle('active', isMuted);
-    $mute.querySelector('.ctrl-icon').innerHTML =
-      isMuted ? '<i class="fas fa-microphone-slash"></i>' : '<i class="fas fa-microphone"></i>';
-    $mute.querySelector('.ctrl-label').textContent = isMuted ? 'Unmute' : 'Mute';
+    $mute.innerHTML = isMuted
+      ? '<i class="fas fa-microphone-slash"></i> Unmute'
+      : '<i class="fas fa-microphone"></i> Mute';
   }
 
   if ($deaf) {
     $deaf.classList.toggle('active', isDeafened);
-    $deaf.querySelector('.ctrl-icon').innerHTML =
-      isDeafened ? '<i class="fas fa-ear-deaf"></i>' : '<i class="fas fa-headphones"></i>';
-    $deaf.querySelector('.ctrl-label').textContent = isDeafened ? 'Undeafen' : 'Deafen';
+    $deaf.innerHTML = isDeafened
+      ? '<i class="fas fa-volume-xmark"></i> Deafened'
+      : '<i class="fas fa-volume-high"></i> Speakers';
   }
 
   if ($cam) {
     $cam.classList.toggle('active', isCameraOff);
-    $cam.querySelector('.ctrl-icon').innerHTML =
-      isCameraOff ? '<i class="fas fa-video-slash"></i>' : '<i class="fas fa-video"></i>';
-    $cam.querySelector('.ctrl-label').textContent = isCameraOff ? 'Start Video' : 'Stop Video';
+    $cam.innerHTML = isCameraOff
+      ? '<i class="fas fa-video-slash"></i> Camera'
+      : '<i class="fas fa-video"></i> Camera';
   }
 
   if ($screen) {
     $screen.classList.toggle('screen-on', isScreenSharing);
-    $screen.querySelector('.ctrl-label').textContent = isScreenSharing ? 'Stop Share' : 'Screen';
+    $screen.innerHTML = isScreenSharing
+      ? '<i class="fas fa-desktop"></i> Stop Share'
+      : '<i class="fas fa-desktop"></i> Screen';
+  }
+
+  // Status bar mic indicator
+  const micStatus = document.getElementById('mic-status');
+  if (micStatus) {
+    micStatus.className = 'status-item' + (isMuted ? '' : ' status-green');
+    micStatus.innerHTML = isMuted
+      ? '<i class="fas fa-microphone-slash"></i> Muted'
+      : '<i class="fas fa-signal"></i> Active';
   }
 }
 
@@ -518,6 +542,23 @@ function copyInvite () {
     ()  => showToast('Room code: ' + roomId),
   );
 }
+
+// ── Socket server status ─────────────────────────
+socket.on('connect', () => {
+  const el = document.getElementById('server-status');
+  if (el) {
+    el.className = 'status-item status-green';
+    el.innerHTML = '<i class="fas fa-circle" style="font-size:.5rem"></i> Server connected';
+  }
+});
+socket.on('disconnect', () => {
+  const el = document.getElementById('server-status');
+  if (el) {
+    el.className = 'status-item';
+    el.style.color = 'var(--danger)';
+    el.innerHTML = '<i class="fas fa-circle" style="font-size:.5rem"></i> Disconnected';
+  }
+});
 
 // ── Boot ──────────────────────────────────────────
 init();

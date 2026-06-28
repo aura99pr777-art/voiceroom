@@ -9,72 +9,60 @@
 </head>
 <body class="room-page">
 
-  <!-- ── Top bar ─────────────────────────────────────────── -->
+  <!-- ── Top bar with all controls ──────────────────────── -->
   <header class="room-header">
-    <div class="room-info">
-      <i class="fas fa-hashtag"></i>
-      <span id="room-name">room</span>
-    </div>
-    <div class="room-meta">
-      <span id="participant-count">1 participant</span>
-      <button class="btn-invite" onclick="copyInvite()">
-        <i class="fas fa-link"></i> Invite
+    <div class="hdr-left">
+      <span class="online-dot"></span>
+      <span class="hdr-room-label">Room:</span>
+      <strong id="room-name">room</strong>
+      <button class="btn-copy-link" onclick="copyInvite()">
+        <i class="fas fa-copy"></i> Copy Link
       </button>
+    </div>
+    <div class="hdr-right">
+      <button class="hdr-icon-btn" title="Help" onclick="showToast('Enter a room code on the join page to invite friends!')">?</button>
+      <button class="hdr-pill hdr-camera" id="btn-camera" onclick="toggleCamera()">
+        <i class="fas fa-video"></i> Camera
+      </button>
+      <button class="hdr-pill hdr-screen" id="btn-screen" onclick="toggleScreenShare()">
+        <i class="fas fa-desktop"></i> Screen
+      </button>
+      <button class="hdr-pill hdr-mute" id="btn-mute" onclick="toggleMute()">
+        <i class="fas fa-microphone"></i> Mute
+      </button>
+      <button class="hdr-pill hdr-speakers" id="btn-deaf" onclick="toggleDeafen()">
+        <i class="fas fa-volume-high"></i> Speakers
+      </button>
+      <button class="hdr-pill hdr-leave" onclick="leaveRoom()">Leave</button>
     </div>
   </header>
 
-  <!-- ── Video grid ──────────────────────────────────────── -->
+  <!-- ── Video / avatar grid ─────────────────────────────── -->
   <main class="video-container">
     <div id="video-grid" class="video-grid"></div>
   </main>
 
-  <!-- ── Controls bar ───────────────────────────────────── -->
-  <footer class="controls-bar">
-
-    <!-- Left: my identity -->
-    <div class="ctrl-identity">
-      <div class="ctrl-avatar" id="my-avatar"></div>
-      <div class="ctrl-identity-text">
-        <span id="my-name-display">You</span>
-        <span class="ctrl-status" id="my-status">Connected</span>
-      </div>
-    </div>
-
-    <!-- Centre: action buttons -->
-    <div class="ctrl-center">
-
-      <button class="ctrl-btn" id="btn-mute" onclick="toggleMute()" title="Mute / Unmute">
-        <div class="ctrl-icon"><i class="fas fa-microphone"></i></div>
-        <span class="ctrl-label">Mute</span>
-      </button>
-
-      <button class="ctrl-btn" id="btn-deaf" onclick="toggleDeafen()" title="Deafen / Undeafen">
-        <div class="ctrl-icon"><i class="fas fa-headphones"></i></div>
-        <span class="ctrl-label">Deafen</span>
-      </button>
-
-      <button class="ctrl-btn" id="btn-camera" onclick="toggleCamera()" title="Toggle Camera">
-        <div class="ctrl-icon"><i class="fas fa-video"></i></div>
-        <span class="ctrl-label">Camera</span>
-      </button>
-
-      <button class="ctrl-btn" id="btn-screen" onclick="toggleScreenShare()" title="Share Screen">
-        <div class="ctrl-icon"><i class="fas fa-desktop"></i></div>
-        <span class="ctrl-label">Screen</span>
-      </button>
-
-      <div class="ctrl-divider"></div>
-
-      <button class="ctrl-btn ctrl-leave" id="btn-leave" onclick="leaveRoom()" title="Leave Room">
-        <div class="ctrl-icon"><i class="fas fa-phone-slash"></i></div>
-        <span class="ctrl-label">Leave</span>
-      </button>
-
-    </div>
-
-    <!-- Right: spacer for symmetry -->
-    <div class="ctrl-spacer"></div>
-
+  <!-- ── Status bar ─────────────────────────────────────── -->
+  <footer class="status-bar">
+    <span class="status-item">
+      <i class="fas fa-users"></i> <span id="peer-count">0</span> peers
+    </span>
+    <span class="status-sep">•</span>
+    <span class="status-item">
+      <i class="fas fa-circle-check"></i> <span id="conn-status">connecting…</span>
+    </span>
+    <span class="status-sep">•</span>
+    <span class="status-item">
+      <i class="fas fa-microphone"></i> Opus 48kbps
+    </span>
+    <span class="status-sep">•</span>
+    <span class="status-item status-green" id="mic-status">
+      <i class="fas fa-signal"></i> Active
+    </span>
+    <span class="status-sep">•</span>
+    <span class="status-item status-green" id="server-status">
+      <i class="fas fa-circle" style="font-size:.5rem"></i> Server connected
+    </span>
   </footer>
 
   <!-- Toast notification -->
