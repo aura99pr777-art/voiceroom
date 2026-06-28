@@ -24,12 +24,24 @@ const params = new URLSearchParams(window.location.search);
 const myName = (params.get('name') || 'Anonymous').slice(0, 30);
 const roomId = (params.get('room') || 'main').slice(0, 40);
 
-// ── ICE / STUN config ─────────────────────────────
+// ── ICE / STUN + TURN config ──────────────────────
+// TURN servers relay audio/video when peers are on different home networks
+// (symmetric NAT). Without TURN, connections only work on simple NATs.
 const ICE_CFG = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302'  },
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
+    // Free public TURN relay (Open Relay Project by Metered)
+    {
+      urls: [
+        'turn:openrelay.metered.ca:80',
+        'turn:openrelay.metered.ca:443',
+        'turn:openrelay.metered.ca:443?transport=tcp',
+      ],
+      username:   'openrelayproject',
+      credential: 'openrelayproject',
+    },
   ],
 };
 
