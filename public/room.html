@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceRoom</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="room-page">
+
+  <!-- ── Top bar ─────────────────────────────────────────── -->
+  <header class="room-header">
+    <div class="room-info">
+      <i class="fas fa-hashtag"></i>
+      <span id="room-name">room</span>
+    </div>
+    <div class="room-meta">
+      <span id="participant-count">1 participant</span>
+      <button class="btn-invite" onclick="copyInvite()">
+        <i class="fas fa-link"></i> Invite
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Video grid ──────────────────────────────────────── -->
+  <main class="video-container">
+    <div id="video-grid" class="video-grid"></div>
+  </main>
+
+  <!-- ── Controls bar ───────────────────────────────────── -->
+  <footer class="controls-bar">
+
+    <!-- Left: my identity -->
+    <div class="ctrl-identity">
+      <div class="ctrl-avatar" id="my-avatar"></div>
+      <div class="ctrl-identity-text">
+        <span id="my-name-display">You</span>
+        <span class="ctrl-status" id="my-status">Connected</span>
+      </div>
+    </div>
+
+    <!-- Centre: action buttons -->
+    <div class="ctrl-center">
+
+      <button class="ctrl-btn" id="btn-mute" onclick="toggleMute()" title="Mute / Unmute">
+        <div class="ctrl-icon"><i class="fas fa-microphone"></i></div>
+        <span class="ctrl-label">Mute</span>
+      </button>
+
+      <button class="ctrl-btn" id="btn-deaf" onclick="toggleDeafen()" title="Deafen / Undeafen">
+        <div class="ctrl-icon"><i class="fas fa-headphones"></i></div>
+        <span class="ctrl-label">Deafen</span>
+      </button>
+
+      <button class="ctrl-btn" id="btn-camera" onclick="toggleCamera()" title="Toggle Camera">
+        <div class="ctrl-icon"><i class="fas fa-video"></i></div>
+        <span class="ctrl-label">Camera</span>
+      </button>
+
+      <button class="ctrl-btn" id="btn-screen" onclick="toggleScreenShare()" title="Share Screen">
+        <div class="ctrl-icon"><i class="fas fa-desktop"></i></div>
+        <span class="ctrl-label">Screen</span>
+      </button>
+
+      <div class="ctrl-divider"></div>
+
+      <button class="ctrl-btn ctrl-leave" id="btn-leave" onclick="leaveRoom()" title="Leave Room">
+        <div class="ctrl-icon"><i class="fas fa-phone-slash"></i></div>
+        <span class="ctrl-label">Leave</span>
+      </button>
+
+    </div>
+
+    <!-- Right: spacer for symmetry -->
+    <div class="ctrl-spacer"></div>
+
+  </footer>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

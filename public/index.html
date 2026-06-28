@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoiceRoom — Voice &amp; Video Calls</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="join-page">
+
+  <div class="join-container">
+    <div class="join-logo"><i class="fas fa-headset"></i></div>
+    <h1 class="join-title">VoiceRoom</h1>
+    <p class="join-subtitle">Crystal-clear voice &amp; video — no account needed</p>
+
+    <div class="join-card">
+      <div class="form-group">
+        <label for="username">Your Name</label>
+        <input id="username" type="text" placeholder="Enter your name…" maxlength="30" autocomplete="off" />
+      </div>
+
+      <div class="form-group">
+        <label for="roomcode">Room Code</label>
+        <div class="room-input-row">
+          <input id="roomcode" type="text" placeholder="Enter or generate a code…" maxlength="20" autocomplete="off" />
+          <button class="btn-icon-only" onclick="generateCode()" title="Roll random code">
+            <i class="fas fa-dice"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-join" id="btn-join">
+        <i class="fas fa-phone"></i> Join Room
+      </button>
+    </div>
+
+    <p class="join-hint">
+      Share your room code with friends so they can join you.
+    </p>
+  </div>
+
+  <script>
+    const CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
+    function rand(n) {
+      let s = '';
+      for (let i = 0; i < n; i++) s += CHARS[Math.floor(Math.random() * CHARS.length)];
+      return s;
+    }
+
+    function generateCode() {
+      document.getElementById('roomcode').value = rand(6);
+    }
+
+    function joinRoom() {
+      const nameEl = document.getElementById('username');
+      const roomEl = document.getElementById('roomcode');
+      const name   = nameEl.value.trim();
+      const room   = roomEl.value.trim() || rand(6);
+
+      if (!name) {
+        nameEl.classList.add('shake', 'error');
+        nameEl.focus();
+        setTimeout(() => nameEl.classList.remove('shake'), 600);
+        return;
+      }
+
+      window.location.href =
+        '/room.html?name=' + encodeURIComponent(name) +
+        '&room='           + encodeURIComponent(room);
+    }
+
+    // Pre-fill room code if arriving from an invite link
+    (function () {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get('room')) document.getElementById('roomcode').value = p.get('room');
+      else               generateCode();
+    })();
+
+    document.getElementById('btn-join').addEventListener('click', joinRoom);
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom(); });
+    document.getElementById('username').addEventListener('input', function () {
+      this.classList.remove('error');
+    });
+  </script>
+</body>
+</html>
